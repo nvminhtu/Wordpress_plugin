@@ -15,8 +15,8 @@
     ----------------------------------------*/
     function init(){
       setUp();
-      loadMore();
-
+      clickEvent();
+      scrollEvent();
       // $(window).scroll(function(){
 
       // });
@@ -38,8 +38,20 @@
     /**
      ** Load more Posts
     **/
-    function loadMore(){
+    function clickEvent(){
       $('#pbd-alp-load-posts a').click(function() {
+        loadMore();
+      });
+    }
+
+    function scrollEvent(){
+      // $(window).on("scroll", function(){
+      //   loadMore();
+      // });
+    }
+
+    function loadMore(){
+    
         // Are there more posts to load?
         if(pageNum <= max) {
         
@@ -70,7 +82,7 @@
         } 
         
         return false;
-      });
+    
     }
     
     /* access control
