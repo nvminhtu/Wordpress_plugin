@@ -23,8 +23,6 @@
         extract(shortcode_atts(array('name' => 'World'), $atts));
         return '<div><p>download button '.$name.'!!!</p></div>';
       }
-
-
     }
   }
 

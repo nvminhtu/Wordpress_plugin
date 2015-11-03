@@ -35,6 +35,7 @@
  		
  		// What page are we on? And what is the pages limit?
  		$max = $wp_query->max_num_pages;
+    $numPosts = $wp_query->$found_posts;
  		$paged = ( get_query_var('paged') > 1 ) ? get_query_var('paged') : 1;
  		
  		// Add some parameters for the JS.
@@ -44,6 +45,7 @@
  			array(
  				'startPage' => $paged,
  				'maxPages' => $max,
+        'numPosts' => $numPosts,
  				'nextLink' => next_posts($max, false)
  			)
  		);
