@@ -62,7 +62,7 @@
       }
     }
   }
-
+  
   /**
    * create connection between chapter and story post
    * @return show post title in dropdown list
