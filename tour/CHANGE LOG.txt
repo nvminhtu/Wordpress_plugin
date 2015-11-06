@@ -1,0 +1,29 @@
+=======TOUR PLUGINS=======
+=================V0.9=======================
++ Add custom filed for custom post type:destination ( add feature image feature textbox)
++ Add Readmore for listing cityguidelis ( jquery show more).
+(20/6/2013)
+=================V0.8=======================
++ Add custom filed for custom post type: hotel(/framework/hotel-list.php)
++ Add tempalte for showing the single hotel ( /template/single-hotel.php)
++ Single destination was customized. ( with Hung - Nhan Ma)
++ Show list hotel ( /templates/hotel-list.php).
+(19/6/2013)
+=================V0.7=======================
++ Add custom post type: hotel(/framework/hotels.php)
++ Add taxonomy to post type hotel
++Add recent post type on homepage (using shortcode)
++ Declare in shortcode.php in plugins tour
+(11/6/2013)
+=================V0.6=======================
++ Add custom post type: cityguides (/framework/cityguides.php)
++ Add taxonomy for cityguides:  type (Type) (/framework/cityguides.php)
++ Add taxonomy for cityguides and destion : areas ( Areas)  (/framework/cityguides.php)
++ Edit index.php
+
+=================V0.5=======================
++ Add custom post type: destination. (/framework/destination.php)
++ Create template for single destination: templates/single-destination.php
++ Create metabox for destination: /framework/metabox-destination.php
++ Create images folder for storing all images: /templates/img/
++ Edit index.php
