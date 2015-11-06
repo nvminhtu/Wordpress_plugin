@@ -10,8 +10,7 @@
  */
 ?>
 
-<?php 
-  
+<?php  
   if(!class_exists('Download_Shortcode_Plugin')) {
     class Download_Shortcode_Plugin {
       function __construct() {
