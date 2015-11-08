@@ -1,0 +1,48 @@
+
+#csv-admin-wrap .info,
+#csv-admin-wrap .success,
+#csv-admin-wrap .warning,
+#csv-admin-wrap .error,
+#csv-admin-wrap .validation {
+	border: 1px solid #32608f;
+	margin: 10px 0px;
+	padding: 10px;
+	color: #ffffff;
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	width: 50%;
+}
+
+#csv-admin-wrap .info {
+	background-color: #4988c8;
+	border-color: #32608f;
+}
+
+#csv-admin-wrap .success {
+	background-color: #32608f;
+	border-color: #467812;
+}
+
+#csv-admin-wrap .warning {
+	background-color: #f0f1bb;
+	border-color: #cfd0a4;
+	color: #000000;
+}
+
+#csv-admin-wrap .error {
+	border-color: #980608;
+	background-color: #d01b1d;
+}
+
+#csv-admin-wrap .message-box {
+	border-color: #cfd0a4;
+  background: #f0f1bb;
+  width: 50%;
+  padding: 10px;
+  margin: 10px 0px;
+  color: #000000;
+}
+#csv-admin-wrap .message-box ul li {
+	list-style: disc;
+	margin: 0px 0 0 20px
+}
