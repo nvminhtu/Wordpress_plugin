@@ -7,16 +7,6 @@
  * @since Promise 2015
  */
 
-
-/**
- * [custom_login_logo change logo admin login]
- * @return [type] [description]
- */
-function custom_login_logo() {
-  echo '<style type="text/css">h1 a { height: 17px !important; padding-top: 50px !important; background: url(/img/share/logo.png) 50% 0 no-repeat !important; font-size: 14px; text-align: center !important; text-indent: 0 !important; text-decoration: none; }</style>';
-}
-add_action('login_head', 'custom_login_logo');
-
 /**
  * [custom_admin_head add style/javascript for admin dashboard]
  * @return [none] 

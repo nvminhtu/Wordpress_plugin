@@ -16,14 +16,23 @@
       public function __construct() {
         //register action
         add_action('init',array(&$this, 'init'));
-
+        add_action('edit_form_after_title', array($this,'mystoryparrent'));
+        add_action('save_post', 'save_mystory' );
       }
       
       public function init() {
         $this->cpt_story();
       }
 
-      
+      /**
+       * load in the same time when plugin load
+       * @return Loading custom class
+       */
+      public function Story_Plugin() {
+        // global $dls;
+        // $dls = new Story_Plugin();
+      }
+
       public function cpt_story() {
         $labels = array(
           'name'               => _x( 'Storys', 'post type general name', 'story-plugin' ),
@@ -60,74 +69,38 @@
 
         register_post_type( 'story', $args );
       }
+
+      public function mystoryparrent( $post_data = false ) {
+        $scr = get_current_screen();
+        $value = '';
+        if ( $post_data ) {
+          $t = get_post($post_data);
+          $a = get_post($t->post_parent);
+          $value = $a->post_title;
+        }
+        if ($scr->id == 'story')
+          echo '<label>Thuộc truyện: <input type="text" name="parent" value="'.$value.'" /></label> (Tên của cuốn truyện gốc)<br /><br />';
+      }
+
+      public function save_mystory( $post_id ) {
+          $story = isset( $_POST['parent'] ) ? get_page_by_title($_POST['parent'], 'OBJECT', 'post') : false ;
+          if ( ! wp_is_post_revision( $post_id ) && $story ){
+          remove_action('save_post', 'save_mystory');
+          $postdata = array(
+          'ID' => $_POST['ID'],
+          'post_parent' => $story->ID
+          );
+          wp_update_post( $postdata );
+          add_action('save_post', 'save_mystory');
+        }
+      }
     }
   }
   
-  /**
-   * create connection between chapter and story post
-   * @return show post title in dropdown list
-   */
-  
- function mystoryparrent( $post_data = false ) {
-    $scr = get_current_screen();
-    $value = '';
-    if ( $post_data ) {
-    $t = get_post($post_data);
-    $a = get_post($t->post_parent);
-    $value = $a->post_title;
-    }
-    if ($scr->id == 'story')
-    echo '<label>Thuộc truyện: <input type="text" name="parent" value="'.$value.'" /></label> (Tên của cuốn truyện gốc)<br /><br />';
+  // add_action( 'plugins_loaded', 'dls_load' );
+
+  if(class_exists('Story_Plugin')) {
+    $Story_Plugin = new Story_Plugin();
+    add_action('plugins_loaded',$Story_Plugin->Story_Plugin());
   }
-  add_action( 'edit_form_after_title', 'mystoryparrent' );
-
-   /**
-   * create connection between chapter and story post
-   * @return show post title in dropdown list
-   */
-  add_action( 'save_post', 'save_mystory' );
-  function save_mystory( $post_id ) {
-      $story = isset( $_POST['parent'] ) ? get_page_by_title($_POST['parent'], 'OBJECT', 'post') : false ;
-      if ( ! wp_is_post_revision( $post_id ) && $story ){
-      remove_action('save_post', 'save_mystory');
-      $postdata = array(
-      'ID' => $_POST['ID'],
-      'post_parent' => $story->ID
-      );
-      wp_update_post( $postdata );
-      add_action('save_post', 'save_mystory');
-    }
-  }
-  /**
-   * get dropdown list in frontend
-   * @return show post title in dropdown list
-   */
-  
-  /**
-   * load in the same time when plugin load
-   * @return Loading custom class
-   */
-  function dls_load() {
-    global $dls;
-    $dls = new Story_Plugin();
-    
-  }
-  add_action( 'plugins_loaded', 'dls_load' );
-
-  // function get_dropdown_part( $id ) {
-  //    global $post, $wpdb;
-  //    $query = $wpdb->get_results(sprintf('select * from %s where post_type = \'%s\' and post_parent = %d and post_status = \'%s\'  order by post_date asc', $wpdb->posts, 'story', $id, 'publish'));
-  //    if ($query) {
-  //    echo '<form id="selectpart">
-  //    <select name="part" onchange="window.location.href = (this.options[this.selectedIndex].value)"><option value="">- Chọn tập -</option>';
-  //    foreach ( $query as $k ) {
-  //    $uri = get_permalink($k->ID);
-  //    if ( ! preg_match('/.*page-[0-9].*/', $uri))
-  //    echo '<option value="'.$uri.'">'.$k->post_title .'</option>';
-  //    }
-  //    echo '</select></form>';
-  //    }
-  // }
-
-
 ?>
