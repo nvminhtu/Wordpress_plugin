@@ -17,7 +17,7 @@
         //register action
         add_action('init',array(&$this, 'init'));
         add_action('edit_form_after_title', array($this,'mystoryparrent'));
-        add_action('save_post', 'save_mystory' );
+        add_action('save_post', array($this,'save_mystory'));
       }
       
       public function init() {
@@ -29,8 +29,7 @@
        * @return Loading custom class
        */
       public function Story_Plugin() {
-        // global $dls;
-        // $dls = new Story_Plugin();
+        //constructor function
       }
 
       public function cpt_story() {
@@ -71,7 +70,21 @@
       }
 
       public function mystoryparrent( $post_data = false ) {
+
+        // $simple_query = "SELECT * FROM $wpdb->posts LIMIT 0, 10";
+
+        // $complex_query = "
+        //   SELECT * FROM $wpdb->posts WHERE
+        //   post_status = publish AND
+        //   comment_count > 5 AND
+        //   post_type = 'post' AND
+        //   ID IN ( SELECT object_id FROM $wpdb->term_relationships WHERE
+        //   term_taxonomy_id = 4 )
+        // ";
+        
+
         $scr = get_current_screen();
+        // print_r($scr);
         $value = '';
         if ( $post_data ) {
           $t = get_post($post_data);
@@ -84,20 +97,19 @@
 
       public function save_mystory( $post_id ) {
           $story = isset( $_POST['parent'] ) ? get_page_by_title($_POST['parent'], 'OBJECT', 'post') : false ;
+          print_r($story);
           if ( ! wp_is_post_revision( $post_id ) && $story ){
-          remove_action('save_post', 'save_mystory');
-          $postdata = array(
-          'ID' => $_POST['ID'],
-          'post_parent' => $story->ID
-          );
+            remove_action('save_post', 'save_mystory');
+            $postdata = array(
+              'ID' => $_POST['ID'],
+              'post_parent' => $story->ID
+            );
           wp_update_post( $postdata );
           add_action('save_post', 'save_mystory');
         }
       }
     }
   }
-  
-  // add_action( 'plugins_loaded', 'dls_load' );
 
   if(class_exists('Story_Plugin')) {
     $Story_Plugin = new Story_Plugin();
