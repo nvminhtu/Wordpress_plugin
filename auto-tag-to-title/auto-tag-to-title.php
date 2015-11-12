@@ -23,21 +23,25 @@ if(!class_exists('Auto_Tag_To_Title')) {
       $add_tags = '';
       $i = 0;
 
-      $p = get_post($post_id);
-      $cur_title = $p->post_title;
-      
-      $post_tags = get_the_tags($post_id);
-      if ($post_tags) {
-        foreach($post_tags as $tag) {
-          //get the first post tag
-          if($i==0) {
-            $add_tags.= '&lsqb;'.$tag->name.'&rsqb;&nbsp;'; 
+      if(in_the_loop()) {
+        $p = get_post($post_id);
+        $cur_title = $p->post_title;
+        
+        $post_tags = get_the_tags($post_id);
+        if ($post_tags) {
+          foreach($post_tags as $tag) {
+            //get the first post tag
+            if($i==0) {
+              $add_tags.= '&lsqb;'.$tag->name.'&rsqb;&nbsp;'; 
+            }
+            $i++;
           }
-          $i++;
-        }
-      }  
+        }  
 
-      $result = $add_tags.$cur_title;
+        $result = $add_tags.$cur_title;
+      } else {
+        $result = $title;
+      }
       return $result;
     } 
   }

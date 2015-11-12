@@ -77,7 +77,7 @@ if(!class_exists('Service_Point_Settings')) {
         'manage-service-point',
         array(&$this, 'plugin_settings_page'),
         '',
-        60);
+        62);
     }
 
     /**
