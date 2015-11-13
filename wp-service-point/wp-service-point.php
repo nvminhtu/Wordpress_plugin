@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Service Point Plugin
+ * Plugin Name: WP Service Point Plugin
  * Description: Plugin quản lý service point
  * Version: 1.0
  * Author: ORO VIETNAM
