@@ -59,7 +59,10 @@
             'public'        => true,
             'menu_position' => 5,
             'supports'      => array(
-              'title'
+              'title',
+              'editor',
+              'thumbnail',
+              'excerpt'
             ),
             'has_archive'   => true,
             'rewrite'       => array(
@@ -75,16 +78,20 @@
        * @return [type]          [description]
        */
       public function write_to_csv( $post_id ) {
-        require_once(sprintf("%s/settings.php", dirname(__FILE__)));
-        $sp_settings = new Service_Point_Settings();
-        $sp_settings->parse_data();
+        $type = "service-point";
+        if($type == $post->post_type) {
+          return;
+        } else {
+          require_once(sprintf("%s/settings.php", dirname(__FILE__)));
+          $sp_settings = new Service_Point_Settings();
+        }
       }
     }
   }
 
   if(class_exists('Manage_Service_Point')) {
     $Manage_Service_Point = new Manage_Service_Point();
-    add_action('plugins_loaded', $Manage_Service_Point::Manage_Service_Point());
+    add_action('plugins_loaded', $Manage_Service_Point->__construct());
   }
 
 ?>
