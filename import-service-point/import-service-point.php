@@ -22,7 +22,7 @@
         add_action('init',array(&$this, 'cpt_service_point'));
         add_action('admin_notices', array($this,'update_interface'));
         add_action('admin_init', array($this,'import_csv'));
-        add_action( 'save_post', array($this,'my_save_post_function', 10, 3 ));
+        
       }
       public function cpt_service_point() {
         register_post_type(
@@ -88,6 +88,10 @@
 
         $arr_fields = array(
           'custom-field' => 'sitepoint_post_attachment',
+          'category' => 'category',
+          'prefecture' => 'prefecture',
+          'address' => 'address',
+          'address2' => 'address2',
           'custom-post-type' => 'service-point'
         );
 
@@ -130,12 +134,20 @@
             "post_status" => "inherit"
           ));
 
-          // Generate the metadata for the attachment, and update the database record.
-          $attach_data = wp_generate_attachment_metadata( $post["attachment"]["id"], $attachment["path"] );
-          wp_update_attachment_metadata( $post["attachment"]["id"], $attach_data );
+          //Attribute for ACF
+          $attr =  array(
+            'pid' => $post["id"],
+            'url' => $post["attachment"]["path"],
+            //'file'=> $file,
+            'attach_id'=> $post["attachment"]["id"]
+          );
+          wp_update_attachment_metadata( $post["attachment"]["id"], $post["attachment"]["path"]);
 
           // Update post's custom field (use with ACF plugin)
-          update_field( $arr_fields["custom-field"], $post["attachment"]["id"], $post["id"] );
+          update_field( 'field_5645aa88bd7c6', $att['attach_id'], $post["id"] );
+          update_field( $arr_fields["category"], $post["category"], $post["id"] );
+          update_field( $arr_fields["address"], $post["address"], $post["id"] );
+          //category,prefecture,address,address2
           
         }
       }
@@ -194,11 +206,6 @@
         return in_array( $title, $posts );
       }
 
-      public function my_save_post_function( $post_ID, $post, $update ) {
-        $msg = 'Is this un update? ';
-        $msg .= $update ? 'Yes.' : 'No.';
-        wp_die( $msg );
-      }
     }
   }
 
