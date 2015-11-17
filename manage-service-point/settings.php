@@ -24,22 +24,22 @@ if(!class_exists('Service_Point_Settings')) {
         $count = 1;
         while ( $query->have_posts() ) : $query->the_post();
           $data = array();
-          $pic_appearance = wp_get_attachment_image_src(get_field('pic_appearance'));
-          $pic_map = wp_get_attachment_image_src(get_field('pic_map'));
+          // $pic_appearance = wp_get_attachment_image_src(get_field('pic_appearance'));
+          // $pic_map = wp_get_attachment_image_src(get_field('pic_map'));
 
-          array_push($data, $count);
-          array_push($data, get_field('address'));
-          array_push($data, get_field('address2'));
-          array_push($data, get_field('tel'));
-          array_push($data, get_field('fax'));
-          array_push($data, get_field('category'));
-          array_push($data, get_field('prefecture'));
-          array_push($data, get_field('district'));
-          array_push($data, $pic_appearance[0]);
-          array_push($data, $pic_map[0]);
-          array_push($data, get_field('type'));
-          array_push($data, get_field('lat'));
-          array_push($data, get_field('lng'));
+          // array_push($data, $count);
+          // array_push($data, get_field('address'));
+          // array_push($data, get_field('address2'));
+          // array_push($data, get_field('tel'));
+          // array_push($data, get_field('fax'));
+          // array_push($data, get_field('category'));
+          // array_push($data, get_field('prefecture'));
+          // array_push($data, get_field('district'));
+          // array_push($data, $pic_appearance[0]);
+          // array_push($data, $pic_map[0]);
+          // array_push($data, get_field('type'));
+          // array_push($data, get_field('lat'));
+          array_push($data, 'ass');
 
           array_push($list,$data);
           $count++;
