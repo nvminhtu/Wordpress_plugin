@@ -1,0 +1,4 @@
+﻿id,address,address2,tel,fax,update_status,category,prefecture,district,pic_appearance,pic_map,type,lat,lng
+﻿1,sdfsdf,sdfsdf,,,Yes,สำนักงานใหญ่,กรุงเทพมหานคร,,http://localhost.promise_cms/cms/wp-content/uploads/2015/11/img-bigc-150x150.jpg,http://localhost.promise_cms/cms/wp-content/uploads/2015/11/img-thumb_03-150x150.jpg,Servicepoint,123123,
+﻿2,dfgdfg,dfgdfgdf,,,0,สำนักงานใหญ่,กรุงเทพมหานคร,ปทุมวัน,http://localhost.promise_cms/cms/wp-content/uploads/2015/11/img-thumb_03-150x150.jpg,http://localhost.promise_cms/cms/wp-content/uploads/2015/11/img-bigc-150x150.jpg,Branch,123123,
+﻿3,ฝ่ายลูกค้าสัมพันธ์,อาคารแคปปิตอลทาวเวอร์ออลซีซั่นส์เพลสชั้น12,1751,02-257-7920,,สำนักงานใหญ่,กรุงเทพมหานคร,ปทุมวัน,http://localhost.promise_cms/cms/wp-content/uploads/2015/11/img-slide_01-150x150.jpg,http://localhost.promise_cms/cms/wp-content/uploads/2015/11/img-slide_01-150x150.jpg,"HQ(call center)",13.738833,

@@ -22,6 +22,7 @@
         add_action('init',array(&$this, 'cpt_service_point'));
         add_action('admin_notices', array($this,'update_interface'));
         add_action('admin_init', array($this,'import_csv'));
+        add_action( 'save_post', array($this,'my_save_post_function', 10, 3 ));
       }
       public function cpt_service_point() {
         register_post_type(
@@ -76,69 +77,32 @@
        * @return [type] [description]
        */
       public function import_csv() {
+        
         global $wpdb;
+        $file_src = "data/dummy.csv";
 
+        //Step 1: check action when we can import data & setup fields
         if ( ! isset( $_GET["insert_sitepoint_posts"] ) ) {
           return;
         }
 
-        // Change these to whatever you set
         $arr_fields = array(
           'custom-field' => 'sitepoint_post_attachment',
           'custom-post-type' => 'service-point'
         );
 
-        // Get the data from all those CSVs!
-        $posts = function() {
-          $data = array();
-          $errors = array();
+        //Step 2: Get data from CSV and parse to array
+        $posts = $this->parse_csv_to_array($file_src);
 
-          // Get array of CSV files
-          //$files = glob( __DIR__ . "/data/*.csv" );
-          $file = CSV_PLUGIN_URL.'data'.'/dummy.csv';
-          // Check permission
-          if ( ! is_readable( $file ) ) {
-            chmod( $file, 0744 );
-          }
+        //Step 3: Parse data to sql query and insert to database
+        foreach ( $posts as $post ) {
 
-          // Check if file is writable, then open it in 'read only' mode
-          if ( is_readable( $file ) && $_file = fopen( $file, "r" ) ) {
-            $post = array();
-            $header = fgetcsv( $_file );
-            while ( $row = fgetcsv( $_file ) ) {
-              foreach ( $header as $i => $key ) {
-                $post[$key] = $row[$i];
-              }
-              $data[] = $post;
-            }
-            fclose( $_file );
-          } else {
-            $errors[] = "File '$file' could not be opened. Check the file's permissions to make sure it's readable by your server.";
-          }
-     
-
-          if ( ! empty( $errors ) ) {
-            // ... do stuff with the errors
-          }
-          return $data;
-        };
-
-        //check exists data post
-        $post_exists = function( $title ) use ( $wpdb, $arr_fields ) {
-          // Get an array of all posts within our custom post type
-          $posts = $wpdb->get_col( "SELECT post_title FROM {$wpdb->posts} WHERE post_type = '{$arr_fields["custom-post-type"]}'" );
-          // Check if the passed title exists in array
-          return in_array( $title, $posts );
-        };
-
-        foreach ( $posts() as $post ) {
-
+          $post_exists = $this->check_post_exists($post["title"], $wpdb, $arr_fields);
           // If the post exists, skip and go to next
-          if ( $post_exists( $post["title"] ) ) {
+          if ($post_exists) {
             continue;
           }
-
-          // Insert the post into the database
+          
           $post["id"] = wp_insert_post( array(
             "post_title" => $post["title"],
             "post_content" => $post["content"],
@@ -146,10 +110,9 @@
             "post_status" => "publish"
           ));
 
-          // Get uploads dir
+          // Set attachment meta and insert URL to custom fields
           $uploads_dir = wp_upload_dir();
 
-          // Set attachment meta
           $attachment = array();
           $attachment["path"] = "{$uploads_dir["baseurl"]}/sitepoint-attachments/{$post["attachment"]}";
           $attachment["file"] = wp_check_filetype( $attachment["path"] );
@@ -167,10 +130,74 @@
             "post_status" => "inherit"
           ));
 
-          // Update post's custom field with attachment
+          // Generate the metadata for the attachment, and update the database record.
+          $attach_data = wp_generate_attachment_metadata( $post["attachment"]["id"], $attachment["path"] );
+          wp_update_attachment_metadata( $post["attachment"]["id"], $attach_data );
+
+          // Update post's custom field (use with ACF plugin)
           update_field( $arr_fields["custom-field"], $post["attachment"]["id"], $post["id"] );
           
         }
+      }
+
+      /**
+       * [parse_csv_to_array description]
+       * @param  [type] $file_src [description]
+       * @return [type]           [description]
+       */
+      public function parse_csv_to_array($file_src ="") {
+        $data = array();
+        $errors = array();
+
+        $file = CSV_PLUGIN_URL.$file_src;
+        // Check permission
+        if ( ! is_readable( $file ) ) {
+          chmod( $file, 0744 );
+        }
+
+        // Check if file is writable, then open it in 'read only' mode
+        if ( is_readable( $file ) && $_file = fopen( $file, "r" ) ) {
+          $post = array();
+          $header = fgetcsv( $_file );
+          while ( $row = fgetcsv( $_file ) ) {
+            foreach ( $header as $i => $key ) {
+              $post[$key] = $row[$i];
+            }
+            $data[] = $post;
+          }
+          fclose( $_file );
+        } else {
+          $errors[] = "File '$file' could not be opened. Check the file's permissions to make sure it's readable by your server.";
+        }
+
+
+        if ( ! empty( $errors ) ) {
+          // errors message for notice
+        }
+        return $data;
+      }
+
+      /**
+       * [check_post_exists description]
+       * @param  [type] $title      [description]
+       * @param  [type] $wpdb       [description]
+       * @param  [type] $arr_fields [description]
+       * @return [type]             [description]
+       */
+      public function check_post_exists($title, $wpdb, $arr_fields) {
+        $posts = $wpdb->get_col(
+         "SELECT post_title 
+          FROM {$wpdb->posts} 
+          WHERE post_type = '{$arr_fields["custom-post-type"]}'"
+        );
+        // Check if the passed title exists in array
+        return in_array( $title, $posts );
+      }
+
+      public function my_save_post_function( $post_ID, $post, $update ) {
+        $msg = 'Is this un update? ';
+        $msg .= $update ? 'Yes.' : 'No.';
+        wp_die( $msg );
       }
     }
   }
