@@ -79,7 +79,7 @@
       public function import_csv() {
         
         global $wpdb;
-        $file_src = "data/promise-service-point.csv";
+        $file_src = "data/dummy.csv";
 
         //Step 1: check action when we can import data & setup fields
         if ( ! isset( $_GET["insert_sitepoint_posts"] ) ) {
@@ -87,19 +87,11 @@
         }
 
         $arr_fields = array(
-          'address' => 'field_5645a37030278',
-          'address2' => 'field_5645a5f930279',
-          'tel' => 'field_5645a6483027a',
-          'fax' => 'field_5645a7093027b',
-          'category' => 'field_5645a7d0dae73',
-          'prefecture' => 'field_5645a933dae74',
-          'district' => 'field_5645a9efdae75',
-          'update_status' => 'field_564ad7bbe6140',
-          'pic_appearance' => 'field_5645aa88bd7c6',
-          'pic_map' => 'field_5645aac3bd7c7',
-          'type' => 'field_5645ab2f596df',
-          'lat' => 'field_5645ab7e596e0',
-          'lng' => 'field_5645abb3596e1',
+          'custom-field' => 'sitepoint_post_attachment',
+          'category' => 'category',
+          'prefecture' => 'prefecture',
+          'address' => 'address',
+          'address2' => 'address2',
           'custom-post-type' => 'service-point'
         );
 
@@ -109,50 +101,24 @@
         //Step 3: Parse data to sql query and insert to database
         foreach ( $posts as $post ) {
 
-          $post_exists = $this->check_post_exists($post["id"], $wpdb, $arr_fields);
+          $post_exists = $this->check_post_exists($post["title"], $wpdb, $arr_fields);
           // If the post exists, skip and go to next
           if ($post_exists) {
             continue;
           }
           
           $post["id"] = wp_insert_post( array(
-            "post_title" => $post["id"],
+            "post_title" => $post["title"],
+            "post_content" => $post["content"],
             "post_type" => $arr_fields["custom-post-type"],
             "post_status" => "publish"
           ));
 
-          
           // Set attachment meta and insert URL to custom fields
-          $attach_pic_appearance = $this->attach_to_media($post["pic_appearance"]);
-          $attach_pic_map = $this->attach_to_media($post["pic_map"]);
-          
-          update_field( $arr_fields["address"], $post["address"], $post["id"] );
-          update_field( $arr_fields["address2"], $post["address2"], $post["id"] );
-          update_field( $arr_fields["tel"], $post["tel"], $post["id"] );
-          update_field( $arr_fields["fax"], $post["fax"], $post["id"] );
-          update_field( $arr_fields["category"], $post["category"], $post["id"] );
-          update_field( $arr_fields["prefecture"], $post["prefecture"], $post["id"] );
-          update_field( $arr_fields["district"], $post["district"], $post["id"] );
-          update_field( $arr_fields["update_status"], $post["update_status"], $post["id"] );
-          update_field( $arr_fields["pic_appearance"], $attach_pic_appearance, $post["id"] );
-          update_field( $arr_fields["pic_map"], $attach_pic_map, $post["id"] );
-          update_field( $arr_fields["type"], $post["type"], $post["id"] );
-          update_field( $arr_fields["lat"], $post["lat"], $post["id"] );
-          update_field( $arr_fields["lng"], $post["lng"], $post["id"] );
-          
-        }
-      }
-      /**
-       * [attach_to_media create media post type for fields which need be uploaded]
-       * @param  [type] $custom_field [para from custom field which we need import]
-       * @return [id]               [id of attachment file]
-       */
-      public function attach_to_media($custom_field) {
-        
-        $uploads_dir = wp_upload_dir();
-        if(empty($custom_field)!='') {
+          $uploads_dir = wp_upload_dir();
+
           $attachment = array();
-          $attachment["path"] = "{$uploads_dir["baseurl"]}/2015/11/{$custom_field}";
+          $attachment["path"] = "{$uploads_dir["baseurl"]}/2015/11/{$post["attachment"]}";
           $attachment["file"] = wp_check_filetype( $attachment["path"] );
           $attachment["name"] = basename( $attachment["path"], ".{$attachment["file"]["ext"]}" );
 
@@ -160,19 +126,39 @@
           $post["attachment"] = $attachment;
 
           // Insert attachment into media library
+          
           $attach_media = array(
             'post_mime_type' => $post["attachment"]["file"]["type"],
             'post_title' => $post["attachment"]["name"],
             'post_content' => '',
             'post_status' => 'inherit'
           );
-        }
-        
-        $post["attachment"]["id"] = wp_insert_attachment($attach_media, $post["attachment"]["path"]);
-        wp_update_attachment_metadata( $post["attachment"]["id"], $post["attachment"]["path"] );
+          
+          $post["attachment"]["id"] = wp_insert_attachment($attach_media,$post["attachment"]["path"]);
 
-        return $post["attachment"]["id"];
+          // $post["attachment"]["id"] = wp_insert_attachment( array(
+          //   "guid" => $post["attachment"]["path"],
+          //   "post_mime_type" => $post["attachment"]["file"]["type"],
+          //   "post_title" => $post["attachment"]["name"],
+          //   "post_content" => "",
+          //   "post_status" => "inherit"
+          // ));
+
+          // Generate the metadata for the attachment, and update the database record.
+          //$attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+          //wp_update_attachment_metadata( $post["attachment"]["id"], $post["attachment"]["path"] );
+         //wp_update_attachment_metadata( $post["attachment"]["id"], $post["attachment"]["id"]);
+
+          // Update post's custom field (use with ACF plugin)
+          //update_field( 'field_5645aa88bd7c6', $post["attachment"]["path"] , $post["id"] );
+          update_field( 'field_5649aec7cf56c', $post["attachment"]["id"] , $post["id"] );
+          update_field( $arr_fields["category"], $post["category"], $post["id"] );
+          update_field( $arr_fields["address"], $post["address"], $post["id"] );
+          //category,prefecture,address,address2
+          
+        }
       }
+
       /**
        * [parse_csv_to_array description]
        * @param  [type] $file_src [description]
@@ -235,4 +221,29 @@
     add_action('plugins_loaded', $Import_CSV_To_CPT->__construct());
   }
 
+/* $uploads_dir = wp_upload_dir();
+
+          $pic_appearance = $post["pic_appearance"];
+
+          if($post["pic_appearance"]!='') {
+            $attachment = array();
+            $attachment["path"] = "{$uploads_dir["baseurl"]}/2015/11/{$post["pic_appearance"]}";
+            $attachment["file"] = wp_check_filetype( $attachment["path"] );
+            $attachment["name"] = basename( $attachment["path"], ".{$attachment["file"]["ext"]}" );
+
+            // Replace post attachment data
+            $post["attachment"] = $attachment;
+
+            // Insert attachment into media library
+            $attach_media = array(
+              'post_mime_type' => $post["attachment"]["file"]["type"],
+              'post_title' => $post["attachment"]["name"],
+              'post_content' => '',
+              'post_status' => 'inherit'
+            );
+          }
+          
+          $post["attachment"]["id"] = wp_insert_attachment($attach_media,$post["attachment"]["path"]);
+          */
+         
 ?>

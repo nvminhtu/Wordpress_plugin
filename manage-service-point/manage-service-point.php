@@ -22,6 +22,7 @@
       public function __construct() {
         add_action('init',array(&$this, 'init'));
         add_action('save_post', array($this,'write_to_csv'));
+        //add_filter('manage_projects_posts_columns', 'bs_projects_table_head');
       }
       
       /**
@@ -85,6 +86,39 @@
           require_once(sprintf("%s/settings.php", dirname(__FILE__)));
           $sp_settings = new Service_Point_Settings();
         }
+      }
+
+      function bs_projects_table_head( $columns ) {
+
+        if( get_current_user_id() == 1 ) {
+            $columns['project_id']  = 'ID';
+          }
+          $columns['project_category']  = 'Project Category';
+          $columns['off_site']  = 'Offsite Project?';
+          $columns['project_date']  = 'Project Date';
+          return $columns;
+
+      }
+
+      public function bs_projects_table_content( $column_name, $post_id ) {
+
+        if( $column_name == 'project_id' ) {
+            echo $post_id;
+        }
+        if( $column_name == 'project_category' ) {
+            $project_category = get_post_meta( $post_id, 'project_category', true );
+            echo $project_category;
+        }
+        if( $column_name == 'off_site' ) {
+            $off_site = get_post_meta( $post_id, 'projects_off-site', true );
+            if( $off_site == '1' ) { echo 'Yes'; } else { echo 'No'; }
+        }
+        if( $column_name == 'project_date' ) {
+            $project_date = get_post_meta( $post_id, 'project_test_date', true );
+            $date = DateTime::createFromFormat('Ymd', get_field('project_test_date'));
+            echo $date->format('jS F, Y');
+        }
+
       }
     }
   }
