@@ -12,6 +12,8 @@
 <?php 
   
   define( 'CSV_PLUGIN_URL', plugin_dir_path(__FILE__ ) );
+  require_once(sprintf("%s/admin-service-point.php", dirname(__FILE__)));
+  
 
   if(!class_exists('Manage_Service_Point')) {
     class Manage_Service_Point {
@@ -22,7 +24,7 @@
       public function __construct() {
         add_action('init',array(&$this, 'init'));
         add_action('save_post', array($this,'write_to_csv'));
-        //add_filter('manage_projects_posts_columns', 'bs_projects_table_head');
+        $sp_admin = new Admin_Service_Point();
       }
       
       /**
@@ -60,10 +62,7 @@
             'public'        => true,
             'menu_position' => 5,
             'supports'      => array(
-              'title',
-              'editor',
-              'thumbnail',
-              'excerpt'
+              'title'
             ),
             'has_archive'   => true,
             'rewrite'       => array(
@@ -78,7 +77,7 @@
        * @param  [type] $post_id [description]
        * @return [type]          [description]
        */
-      public function write_to_csv( $post_id ) {
+      public function write_to_csv( $post ) {
         $type = "service-point";
         if($type == $post->post_type) {
           return;
@@ -88,38 +87,6 @@
         }
       }
 
-      function bs_projects_table_head( $columns ) {
-
-        if( get_current_user_id() == 1 ) {
-            $columns['project_id']  = 'ID';
-          }
-          $columns['project_category']  = 'Project Category';
-          $columns['off_site']  = 'Offsite Project?';
-          $columns['project_date']  = 'Project Date';
-          return $columns;
-
-      }
-
-      public function bs_projects_table_content( $column_name, $post_id ) {
-
-        if( $column_name == 'project_id' ) {
-            echo $post_id;
-        }
-        if( $column_name == 'project_category' ) {
-            $project_category = get_post_meta( $post_id, 'project_category', true );
-            echo $project_category;
-        }
-        if( $column_name == 'off_site' ) {
-            $off_site = get_post_meta( $post_id, 'projects_off-site', true );
-            if( $off_site == '1' ) { echo 'Yes'; } else { echo 'No'; }
-        }
-        if( $column_name == 'project_date' ) {
-            $project_date = get_post_meta( $post_id, 'project_test_date', true );
-            $date = DateTime::createFromFormat('Ymd', get_field('project_test_date'));
-            echo $date->format('jS F, Y');
-        }
-
-      }
     }
   }
 

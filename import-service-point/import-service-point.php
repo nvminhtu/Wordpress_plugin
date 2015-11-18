@@ -150,7 +150,7 @@
       public function attach_to_media($custom_field) {
         
         $uploads_dir = wp_upload_dir();
-        if(empty($custom_field)!='') {
+        if($custom_field!='') {
           $attachment = array();
           $attachment["path"] = "{$uploads_dir["baseurl"]}/2015/11/{$custom_field}";
           $attachment["file"] = wp_check_filetype( $attachment["path"] );

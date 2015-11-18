@@ -1,0 +1,8 @@
+WP API for Attachment
+
+wp_generate_attachment_metadata
+wp_update_attachment_metadata
+===
+API for admin filter column post
+
+manage edit-post type columns
