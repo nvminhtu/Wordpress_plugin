@@ -16,20 +16,12 @@
       public function __construct() {
         //register action
         add_action('init',array(&$this, 'init'));
-        add_action('edit_form_after_title', array($this,'mystoryparrent'));
-        add_action('save_post', array($this,'save_mystory'));
+        add_action('edit_form_after_title', array($this,'admin_init'));
+        add_action('save_post', array($this,'save_case_study_parent_id'));
       }
       
       public function init() {
         $this->cpt_story();
-      }
-
-      /**
-       * load in the same time when plugin load
-       * @return Loading custom class
-       */
-      public function Story_Plugin() {
-        //constructor function
       }
 
       public function cpt_story() {
@@ -69,50 +61,42 @@
         register_post_type( 'story', $args );
       }
 
-      public function mystoryparrent( $post_data = false ) {
-
-        // $simple_query = "SELECT * FROM $wpdb->posts LIMIT 0, 10";
-
-        // $complex_query = "
-        //   SELECT * FROM $wpdb->posts WHERE
-        //   post_status = publish AND
-        //   comment_count > 5 AND
-        //   post_type = 'post' AND
-        //   ID IN ( SELECT object_id FROM $wpdb->term_relationships WHERE
-        //   term_taxonomy_id = 4 )
-        // ";
-        
-
-        $scr = get_current_screen();
-        // print_r($scr);
-        $value = '';
-        if ( $post_data ) {
-          $t = get_post($post_data);
-          $a = get_post($t->post_parent);
-          $value = $a->post_title;
-        }
-        if ($scr->id == 'story')
-          echo '<label>Thuộc truyện: <input type="text" name="parent" value="'.$value.'" /></label> (Tên của cuốn truyện gốc)<br /><br />';
+      /**
+       * [admin_init description]
+       * @return [type] [description]
+       */
+      public function admin_init(){
+        add_meta_box('case_study_parent_id', 'Case Study Parent ID', $this->set_case_study_parent_id(), 'casestudy', 'normal', 'low');
+      }
+      
+      //Meta box for setting the parent ID
+      public function set_case_study_parent_id() {
+        global $post;
+          $custom = get_post_custom($post->ID);
+          $parent_id = $custom['parent_id'][0];
+        ?>
+        <p>Please specify the ID of the page or post to be a parent to this Case Study.</p>
+        <p>Leave blank for no heirarchy.  Case studies will appear from the server root with no assocaited parent page or post.</p>
+        <input type='text' id='parent_id' name='parent_id' value='<?php echo $post->post_parent; ?>' />
+        <?php
+        echo "<input type='hidden' name='parent_id_noncename' value='' . wp_create_nonce(__FILE__) . '' />";
       }
 
-      public function save_mystory( $post_id ) {
-          $story = isset( $_POST['parent'] ) ? get_page_by_title($_POST['parent'], 'OBJECT', 'post') : false ;
-          print_r($story);
-          if ( ! wp_is_post_revision( $post_id ) && $story ){
-            remove_action('save_post', 'save_mystory');
-            $postdata = array(
-              'ID' => $_POST['ID'],
-              'post_parent' => $story->ID
-            );
-          wp_update_post( $postdata );
-          add_action('save_post', 'save_mystory');
-        }
+      
+      public function save_case_study_parent_id($post_id) {
+        global $post;
+        if (!wp_verify_nonce($_POST['parent_id_noncename'],__FILE__)) return $post_id;
+          if(isset($_POST['parent_id']) && ($_POST['post_type'] == 'casestudy')) {
+            $data = $_POST['parent_id'];
+            update_post_meta($post_id, 'parent_id', $data);
+          }
       }
     }
   }
 
   if(class_exists('Story_Plugin')) {
     $Story_Plugin = new Story_Plugin();
-    add_action('plugins_loaded',$Story_Plugin->Story_Plugin());
   }
+
+  
 ?>
