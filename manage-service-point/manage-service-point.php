@@ -24,7 +24,6 @@
       public function __construct() {
         add_action('init',array(&$this, 'init'));
         add_action('save_post', array($this,'write_to_csv'));
-        $sp_admin = new Admin_Service_Point();
       }
       
       /**
@@ -90,9 +89,14 @@
     }
   }
 
+  // Call main class
   if(class_exists('Manage_Service_Point')) {
     $Manage_Service_Point = new Manage_Service_Point();
     add_action('plugins_loaded', $Manage_Service_Point->__construct());
+  }
+  // Call Admin functions to edit admin panel
+  if(class_exists('Admin_Service_Point')) {
+    $Admin_Service_Point = new Admin_Service_Point();
   }
 
 ?>

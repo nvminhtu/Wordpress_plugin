@@ -20,17 +20,15 @@
        * @return [column head]          [column head title in admin view list]
        */
       public function service_point_table_head($columns ) {
-        
-        //unset($columns['date']);
-        
         $columns = array();
+        
+        $columns['cb'] = 'Select All';
         $columns['title'] = 'ID';
         $columns['address']  = 'Address';
         $columns['address2']  = 'Address 2';
         $columns['date'] = 'Date';
 
         return $columns;
-
       }
 
       /**
@@ -43,6 +41,7 @@
             .column-address { text-align: left; width:500px !important; overflow:hidden }
         </style>';
       }
+
       /**
        * [move_quick_edit_links move quick edit to address]
        * @return [type] [description]
@@ -66,7 +65,6 @@
             }
             jQuery(document).ready(function ($){
                 doMove();
-                console.log('asfa');
             });
             </script>
             <?php
@@ -79,14 +77,16 @@
        * @return [value]             [post content value for each column]
        */
       public function service_point_table_content( $column_name, $post_id ) {
-        if( $column_name == 'address' ) {
-            $address = get_post_meta( $post_id, 'address', true );
+        switch ($column_name) {
+          case 'address':
+            $address = get_post_meta( $post_id, 'address', true );;
             $link = get_edit_post_link();
-            echo "<a href='".$link."''>".$address."</a>";
-        }
-        if( $column_name == 'address2' ) {
-          $address2 = get_post_meta( $post_id, 'address2', true );
-          echo $address2;
+            echo "<a href='".$link."'>".$address."</a>";
+            break;
+          case 'address2': 
+            $address2 = get_post_meta( $post_id, 'address2', true );
+            echo $address2;
+            break;
         }
       }
 
@@ -98,6 +98,7 @@
       public function sortable_sp_column($columns ) {
         $columns['address'] = 'address';
         $columns['address2'] = 'address2';
+        unset($columns['title']);
         return $columns;
       }
      
@@ -122,12 +123,7 @@
         }
         return $vars;
       }
+
     }
   }
-
-  if(class_exists('Admin_Service_Point')) {
-    $Admin_Service_Point = new Admin_Service_Point();
-    add_action('plugins_loaded', $Admin_Service_Point->__construct());
-  }
-
 ?>

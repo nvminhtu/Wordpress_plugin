@@ -19,7 +19,7 @@
        * [__construct description]
        */
       public function __construct() {
-        add_action('init',array(&$this, 'cpt_service_point'));
+        //add_action('init',array(&$this, 'cpt_service_point'));
         add_action('admin_notices', array($this,'update_interface'));
         add_action('admin_init', array($this,'import_csv'));
         
