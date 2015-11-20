@@ -58,7 +58,8 @@
               'not_found_in_trash' => __('No items found in Trash.', 'service_point_domain'),
               'parent_item_colon'  => __('Parent Items:', 'service_point_domain'),
             ),
-            'public'        => true,
+            'public'        => false,
+            'show_ui'       => true,
             'menu_position' => 5,
             'supports'      => array(
               'title'
@@ -86,6 +87,12 @@
         }
       }
 
+      public function remove_cookies() {
+        if (isset($_COOKIE['am_force_theme_layout'])){
+          unset($_COOKIE['am_force_theme_layout']);
+        }
+      }
+
     }
   }
 
@@ -93,6 +100,7 @@
   if(class_exists('Manage_Service_Point')) {
     $Manage_Service_Point = new Manage_Service_Point();
     add_action('plugins_loaded', $Manage_Service_Point->__construct());
+    add_action('plugins_loaded', $Manage_Service_Point->remove_cookies());
   }
   // Call Admin functions to edit admin panel
   if(class_exists('Admin_Service_Point')) {

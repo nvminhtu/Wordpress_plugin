@@ -12,6 +12,7 @@
         add_filter('requests', array($this,'service_point_column_sorting'));
         add_action('admin_head-edit.php', array($this,'move_quick_edit_links'));
         add_action('admin_head', array($this,'admin_style_column'));
+        add_filter('post_row_actions', array($this,'remove_row_actions'),10,2);
       }
       
       /**
@@ -81,7 +82,7 @@
           case 'address':
             $address = get_post_meta( $post_id, 'address', true );;
             $link = get_edit_post_link();
-            echo "<a href='".$link."'>".$address."</a>";
+            echo "<a class='row-title' href='".$link."'>".$address."</a>";
             break;
           case 'address2': 
             $address2 = get_post_meta( $post_id, 'address2', true );
@@ -124,6 +125,15 @@
         return $vars;
       }
 
+      public function remove_row_actions($actions, $post) {
+        global $current_screen;
+        if($current_screen->post_type!='service-point') { 
+          return $actions;
+        } else {
+          unset($actions['view']);
+        }
+        return $actions;
+      }
     }
   }
 ?>
