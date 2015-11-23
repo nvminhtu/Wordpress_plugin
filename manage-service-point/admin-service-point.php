@@ -37,10 +37,15 @@
        * @return [type] [description]
        */
       public function admin_style_column() {
-        echo '<style type="text/css">
-            .column-title { text-align: left; width:50px !important; overflow:hidden }
-            .column-address { text-align: left; width:500px !important; overflow:hidden }
-        </style>';
+        global $current_screen;
+        if( 'service-point' != $current_screen->post_type ) { 
+          return;
+        } else {
+          echo '<style type="text/css">
+              .column-title { text-align: left; width:50px !important; overflow:hidden }
+              .column-address { text-align: left; width:500px !important; overflow:hidden }
+          </style>';
+        }
       }
 
       /**
